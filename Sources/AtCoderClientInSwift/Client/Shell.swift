@@ -32,13 +32,13 @@ struct Shell: IteratorProtocol, Sequence {
     var buffer: [Input] = []
 
     mutating func next() -> Input? {
-        guard AtCoderURL != nil else {
-            print("AtCoder問題URL >> ", terminator: "")
+        guard let atCoderURL = AtCoderURL else {
+            print("AtCoder問題URL> ", terminator: "")
             let urlString = readLine()!
             return Input(command: .url, args: [urlString])
         }
 
-        print("AtCoder Client >> ", terminator: "")
+        print("\(atCoderURL.lastPathComponent)> ", terminator: "")
         return readLine().flatMap { line in
             guard let input = Input(rawInput: line) else { 
                 return Input(command: .nothing, args: [])
