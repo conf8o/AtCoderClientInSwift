@@ -21,7 +21,7 @@ enum Command: String {
             print("make コマンド; 引数が足りません。'make fileName A' のように指定してください。")
             return
         }
-        print("make", fileName, problem)
+        print("(TODO) make", fileName, problem)
     }
 
     static func test(_ fileName_: [String]) {
@@ -30,7 +30,7 @@ enum Command: String {
             print("実行するファイルを1つ指定してください。")
             return
         }
-        print("test", fileName)
+        print("(TODO) test", fileName)
     }
 
     static func submit(_ fileName_: [String]) {
@@ -39,7 +39,7 @@ enum Command: String {
             print("提出するファイルを1つ指定してください。")
             return
         }
-        print("submit TODO", fileName)
+        print("(TODO) submit", fileName)
     }
 
     static func url(_ urlString_: [String]) -> URL? {
