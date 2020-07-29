@@ -9,10 +9,15 @@ struct Input {
         self.args = args
     }
 
-    init?(rawInput: String) {
-        var commands = rawInput.split(separator: " ").map(String.init)
-
-        guard commands.count > 0 else { return nil }
+    init?() {
+        guard let line = readLine() else { return nil }
+        
+        var commands = line.split(separator: " ").map(String.init)
+        guard commands.count > 0 else {
+            self.command = .nothing
+            self.args = []
+            return
+        }
 
         if Command.problems.contains(commands[0]) {
             commands = [Command.test.rawValue, commands[0]]
@@ -20,7 +25,9 @@ struct Input {
 
         guard let command = Command(rawValue: commands[0]) else {
             print("No such command \(commands[0])")
-            return nil
+            self.command = .nothing
+            self.args = []
+            return
         }
         
         self.command = command
@@ -30,19 +37,22 @@ struct Input {
 
 struct Shell: IteratorProtocol, Sequence {
     var buffer: [Input] = []
-
+    let client: AtCoderClient
+    
+    init(client: AtCoderClient) {
+        self.client = client
+    }
+    
     mutating func next() -> Input? {
-        guard let atCoderURL = AtCoderURL else {
+        guard let atCoderURL = client.atCoderURL else {
             print("AtCoder問題URL> ", terminator: "")
             let urlString = readLine()!
             return Input(command: .url, args: [urlString])
         }
 
         print("\(atCoderURL.lastPathComponent)> ", terminator: "")
-        return readLine().flatMap { line in
-            guard let input = Input(rawInput: line) else { 
-                return Input(command: .nothing, args: [])
-            }
+        
+        return Input().flatMap { input in
 
             if input.command == .quit {
                 return nil

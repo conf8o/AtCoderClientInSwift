@@ -1,7 +1,7 @@
 import XCTest
 import class Foundation.Bundle
 
-final class AtCoderClientInSwiftTests: XCTestCase {
+final class AtCoderClientTests: XCTestCase {
     func testExample() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
@@ -12,7 +12,7 @@ final class AtCoderClientInSwiftTests: XCTestCase {
             return
         }
 
-        let fooBinary = productsDirectory.appendingPathComponent("AtCoderClientInSwift")
+        let fooBinary = productsDirectory.appendingPathComponent("AtCoderClient")
 
         let process = Process()
         process.executableURL = fooBinary

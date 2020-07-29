@@ -1,7 +1,7 @@
 import XCTest
 
-import AtCoderClientInSwiftTests
+import AtCoderClientTests
 
 var tests = [XCTestCaseEntry]()
-tests += AtCoderClientInSwiftTests.allTests()
+tests += AtCoderClientTests.allTests()
 XCTMain(tests)

@@ -9,21 +9,7 @@ enum Command: String {
     case url = "url"
     case nothing
 
-    static let problems: Set = ["A", "B", "C"]
-    
-    static func exec(command: Command, args: [String]) {
-        switch command {
-        case .help:
-            help()
-        case .make:
-            make(args)
-        case .test:
-            test(args)
-        case .submit:
-            submit(args)
-        default: break
-        }
-    }
+    static let problems = "A"..."Z"
 
     static func help() {
         print(HELP)
@@ -56,21 +42,19 @@ enum Command: String {
         print("submit TODO", fileName)
     }
 
-    static func url(_ urlString_: [String], url: inout URL?, examples: inout [String: [String]?]) {
+    static func url(_ urlString_: [String]) -> URL? {
         var iter = urlString_.makeIterator()
         guard let urlString = iter.next() else {
             print("URLを1つ指定してください。")
-            return
+            return nil
         }
         
-        guard isAtCoderURL(string: urlString), let url_ = URL(string: urlString) else {
+        guard isAtCoderURL(string: urlString), let url = URL(string: urlString) else {
             print("AtCoderの問題のURLを指定してください。")
-            return
+            return nil
         }
         
-        url = url_
-        examples = AtCoderCrawler.getExamples(url: url_)
-        print("URLを設定しました:", url_.description)
+        return url
     }
     
     private static func isAtCoderURL(string: String) -> Bool {
