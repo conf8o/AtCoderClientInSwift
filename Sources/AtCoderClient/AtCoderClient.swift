@@ -31,11 +31,7 @@ class AtCoderClient {
             case .test:
                 Command.test(args)
             case .url:
-                if let url = Command.url(args) {
-                    atCoderURL = url
-                    problemExamples = AtCoderCrawler.getExamples(url: url)
-                    print("URLを設定しました。:", url)
-                }
+                Command.url(args, url: &atCoderURL, examples: &problemExamples)
             }
         }
     }

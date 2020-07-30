@@ -42,19 +42,21 @@ enum Command: String {
         print("(TODO) submit", fileName)
     }
 
-    static func url(_ urlString_: [String]) -> URL? {
-        var iter = urlString_.makeIterator()
+    static func url(_ urlString: [String], url: inout URL?, examples: inout [String: [String]]) {
+        var iter = urlString.makeIterator()
         guard let urlString = iter.next() else {
             print("URLを1つ指定してください。")
             return nil
         }
         
-        guard isAtCoderURL(string: urlString), let url = URL(string: urlString) else {
+        guard isAtCoderURL(string: urlString), let url_ = URL(string: urlString) else {
             print("AtCoderの問題のURLを指定してください。")
             return nil
         }
         
-        return url
+        url = url_
+        examples = AtCoderCrowler.getExamples(url: url)
+        print("URLを設定しました。:", url)
     }
     
     private static func isAtCoderURL(string: String) -> Bool {
