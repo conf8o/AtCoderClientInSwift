@@ -12,26 +12,30 @@ class AtCoderClient {
         self.problemExamples = problemExamples
     }
         
-    func run() {
+    func runCLI() {
         print(WELCOME)
         for yourInput: Input in Shell(client: self) {
             let command: Command = yourInput.command
             let args: [String] = yourInput.args
-            switch command {
-            case .nothing:
-                continue
-            case .quit:
-                break
-            case .help:
-                Command.help()
-            case .make:
-                Command.make(args)
-            case .submit:
-                Command.submit(args)
-            case .test:
-                Command.test(args)
-            case .url:
-                Command.url(args, url: &atCoderURL, examples: &problemExamples)
+            do {
+                switch command {
+                case .nothing:
+                    continue
+                case .quit:
+                    break
+                case .help:
+                    print(Command.help())
+                case .make:
+                    try Command.make(args)
+                case .submit:
+                    try Command.submit(args)
+                case .test:
+                    try Command.test(args)
+                case .url:
+                    (atCoderURL, problemExamples) = try Command.url(args)
+                }
+            } catch CommandError.invalidArguments(let message) {
+                print(message)
             }
         }
     }

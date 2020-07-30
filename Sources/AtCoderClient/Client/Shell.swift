@@ -9,14 +9,12 @@ struct Input {
         self.args = args
     }
 
-    init?() {
+    static func fromCLI() -> Input? {
         guard let line = readLine() else { return nil }
         
         var commands = line.split(separator: " ").map(String.init)
         guard commands.count > 0 else {
-            self.command = .nothing
-            self.args = []
-            return
+            return Input(command: .nothing, [])
         }
 
         if Command.problems.contains(commands[0]) {
@@ -25,9 +23,7 @@ struct Input {
 
         guard let command = Command(rawValue: commands[0]) else {
             print("No such command \(commands[0])")
-            self.command = .nothing
-            self.args = []
-            return
+            return Input(command: .nothing, [])
         }
         
         self.command = command
@@ -52,7 +48,7 @@ struct Shell: IteratorProtocol, Sequence {
 
         print("\(atCoderURL.lastPathComponent)> ", terminator: "")
         
-        return Input().flatMap { input in
+        return Input.fromCLI().flatMap { input in
 
             if input.command == .quit {
                 return nil
