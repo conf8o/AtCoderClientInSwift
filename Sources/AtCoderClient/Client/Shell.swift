@@ -14,7 +14,7 @@ struct Input {
         
         var commands = line.split(separator: " ").map(String.init)
         guard commands.count > 0 else {
-            return Input(command: .nothing, [])
+            return Input(command: .nothing, args: [])
         }
 
         if Command.problems.contains(commands[0]) {
@@ -23,11 +23,10 @@ struct Input {
 
         guard let command = Command(rawValue: commands[0]) else {
             print("No such command \(commands[0])")
-            return Input(command: .nothing, [])
+            return Input(command: .nothing, args: [])
         }
         
-        self.command = command
-        self.args = commands.count > 1 ? Array(commands[1...]) : []
+        return Input(command: command, args: commands.count > 1 ? Array(commands[1...]) : [])
     }
 }
 
