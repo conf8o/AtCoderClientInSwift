@@ -2,14 +2,18 @@ import Foundation
 
 class AtCoderClient {
     typealias Rank = String // A, B, C ...
-    typealias Example = [String] // 入力例
+//    struct Samples {
+//        let input: [String]
+//        let output: [String]
+//    }
+    typealias Samples = [String]
     
-    var atCoderURL: URL? = nil
-    var problemExamples = [Rank: Example?]()
+    var atCoderURL: URL?
+    var problemSamples: [Rank: Samples]?
     
-    init(atCoderURL: URL? = nil, problemExamples: [Rank: Example?] = [:]) {
+    init(atCoderURL: URL? = nil, problemSamples: [Rank: Samples]? = nil) {
         self.atCoderURL = atCoderURL
-        self.problemExamples = problemExamples
+        self.problemSamples = problemSamples
     }
         
     func runCLI() {
@@ -24,18 +28,21 @@ class AtCoderClient {
                 case .quit:
                     break
                 case .help:
-                    print(Command.help())
+                    print(Command.doHelp())
                 case .make:
-                    try Command.make(args)
+                    try Command.doMake(args)
                 case .submit:
-                    try Command.submit(args)
+                    try Command.doSubmit(args)
                 case .test:
-                    try Command.test(args)
+                    try Command.doTest(args)
                 case .url:
-                    (atCoderURL, problemExamples) = try Command.url(args)
+                    (atCoderURL, problemSamples) = try Command.doUrl(args)
                 }
             } catch CommandError.invalidArguments(let message) {
                 print(message)
+            } catch {
+                print(error)
+                break
             }
         }
     }
