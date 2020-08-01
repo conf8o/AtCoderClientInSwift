@@ -2,29 +2,40 @@ import Foundation
 import Kanna
 
 struct AtCoderCrawler {
-    static func getSamples(url: URL) throws -> [String: [String]]? {
+    static func getSamples(atCoderURL: AtCoderURL) -> [String: Samples]? {
+        guard let contestsPath = atCoderURL.contestsPath, let contest = atCoderURL.contest else { return nil }
+        guard let tasksPath = URL(string: "\(contestsPath)\(contest)/tasks") else { return nil }
         do {
             // 問題のURL
-            let doc = try HTML(url: url, encoding: .utf8)
+            let doc = try HTML(url: tasksPath, encoding: .utf8)
         
             // A xx B yy C zz ...
             let link = doc.xpath("//tbody//a")
-            let rankSamples = try link.enumerated().filter { $0.0 % 2 == 0 }.map { _, element -> (String, [String]) in
+            let rankSamples = try link.enumerated().filter { $0.0 % 2 == 0 }.map { _, element -> (String, Samples) in
                 // host: atcoder.jp
                 // rank: A etc.
                 // href: /contests/abc... etc.
-                guard let host = url.host,
-                      let rank = element.text,
-                      let href = element["href"] else { throw AtCoderCrawlerError.invalidURL(url.absoluteString) }
+                guard let rank = element.text,
+                      let href = element["href"] else { throw AtCoderCrawlerError.invalidURL(tasksPath.absoluteString) }
                 
-                guard let problemURL = URL(string: "https://\(host)\(href)") else { throw AtCoderCrawlerError.invalidURL(url.absoluteString) }
+                guard let problemURL = URL(string: "https://\(atCoderURL.host)\(href)") else { throw AtCoderCrawlerError.invalidURL(tasksPath.absoluteString) }
                 
                 let problem = try HTML(url: problemURL, encoding: .utf8)
-                let samplesIter = problem.xpath("//pre").makeIterator()
-                // 入力形式を削除
-                let _ = samplesIter.next()
+                let preSamplesIter = problem.xpath("//pre").makeIterator()
                 
-                let samples = samplesIter.compactMap { tag in tag.text }
+                // TODO: 入力形式を削除
+                // 入力形式を削除
+                // let _ = preSamplesIter.next()
+                
+                var samplesTexts = preSamplesIter.compactMap { tag in tag.text }.makeIterator()
+                var inputs = [String]()
+                var outputs = [String]()
+                while let input = samplesTexts.next(), let output = samplesTexts.next() {
+                    inputs.append(input)
+                    outputs.append(output)
+                }
+                let samples = Samples(inputs: inputs, outputs: outputs)
+                
                 return (rank, samples)
             }
             return Dictionary(uniqueKeysWithValues: rankSamples)

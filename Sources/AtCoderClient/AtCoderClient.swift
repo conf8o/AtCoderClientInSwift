@@ -2,16 +2,11 @@ import Foundation
 
 class AtCoderClient {
     typealias Rank = String // A, B, C ...
-//    struct Samples {
-//        let input: [String]
-//        let output: [String]
-//    }
-    typealias Samples = [String]
     
-    var atCoderURL: URL?
+    var atCoderURL: AtCoderURL?
     var problemSamples: [Rank: Samples]?
     
-    init(atCoderURL: URL? = nil, problemSamples: [Rank: Samples]? = nil) {
+    init(atCoderURL: AtCoderURL? = nil, problemSamples: [Rank: Samples]? = nil) {
         self.atCoderURL = atCoderURL
         self.problemSamples = problemSamples
     }

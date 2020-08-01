@@ -11,5 +11,3 @@ enum Command: String {
 
     static let problems = "A"..."Z"
 }
-
-struct CommandMethod { }

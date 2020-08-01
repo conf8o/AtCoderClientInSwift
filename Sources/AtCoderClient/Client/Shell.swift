@@ -40,12 +40,12 @@ struct Shell: IteratorProtocol, Sequence {
     
     mutating func next() -> Input? {
         guard let atCoderURL = client.atCoderURL else {
-            print("AtCoder問題URL> ", terminator: "")
+            print("AtCoderコンテストURL> ", terminator: "")
             let urlString = readLine()!
             return Input(command: .url, args: [urlString])
         }
 
-        print("\(atCoderURL.lastPathComponent)> ", terminator: "")
+        print("\(atCoderURL.contest ?? "AtCoderコンテストURL")> ", terminator: "")
         
         return Input.fromCLI().flatMap { input in
 
