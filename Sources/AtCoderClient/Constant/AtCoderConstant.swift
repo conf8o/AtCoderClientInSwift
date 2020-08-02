@@ -1,3 +1,3 @@
 import Foundation
 
-let CONTEST_URL_PREFIX = "https://atcoder.jp/contests/"
+let ATCODER_HOST = "atcoder.jp"

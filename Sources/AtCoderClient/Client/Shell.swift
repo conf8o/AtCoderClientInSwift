@@ -45,7 +45,7 @@ struct Shell: IteratorProtocol, Sequence {
             return Input(command: .url, args: [urlString])
         }
 
-        print("\(atCoderURL.contest ?? "AtCoderコンテストURL")> ", terminator: "")
+        print("\(atCoderURL.contest ?? "NO CONTEST")> ", terminator: "")
         
         return Input.fromCLI().flatMap { input in
 

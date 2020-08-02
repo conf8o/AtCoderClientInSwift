@@ -8,24 +8,19 @@ struct AtCoderURL {
             return path.contains(Sub.contests.rawValue)
         }
     }
-    var url: URL?
+    static let host: String = ATCODER_HOST
+    static let contestsPath: String = "https://\(host)/\(Sub.contests.rawValue)/"
     
     private var sub: Sub?
+    private var _url: URL?
     private var _pathComponents: [String] = []
     
+    var url: URL? { return _url }
     var pathComponents: [String] { return _pathComponents }
-    var host: String = "atcoder.jp"
-    var contestsPath: String? {
-        if sub == .contests && _pathComponents.count > 1 {
-            return "http://\(host)/\(Sub.contests.rawValue)/"
-        } else {
-            return nil
-        }
-    }
     var contest: String? {
         if sub == .contests && _pathComponents.count > 2 {
             // _pathComponentsは例えば https://atcoder.jp/contests/abc173 => ["/", "contests", "abc173"]
-            // のようになっているので、3番目がコンテストになる。
+            // のようになっているので、2番目がコンテストになる。
             return _pathComponents[2]
         } else {
             return nil
@@ -35,7 +30,7 @@ struct AtCoderURL {
     init?(string: String) {
         guard isAtCoderURL(string: string), let url = URL(string: string) else { return nil }
         
-        self.url = url
+        self._url = url
         self._pathComponents = url.pathComponents
         
         if Sub.isContests(path: string) {
@@ -46,6 +41,6 @@ struct AtCoderURL {
     }
     
     private func isAtCoderURL(string: String) -> Bool {
-        return string.hasPrefix(CONTEST_URL_PREFIX)
+        return string.hasPrefix("https://\(AtCoderURL.host)")
     }
 }
