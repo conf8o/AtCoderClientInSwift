@@ -2,40 +2,42 @@ import Foundation
 
 class AtCoderClient {
     typealias Rank = String // A, B, C ...
-    typealias Example = [String] // 入力例
     
-    var atCoderURL: URL? = nil
-    var problemExamples = [Rank: Example?]()
+    var atCoderURL: AtCoderURL?
+    var problemSamples: [Rank: Samples]?
     
-    init(atCoderURL: URL? = nil, problemExamples: [Rank: Example?] = [:]) {
+    init(atCoderURL: AtCoderURL? = nil, problemSamples: [Rank: Samples]? = nil) {
         self.atCoderURL = atCoderURL
-        self.problemExamples = problemExamples
+        self.problemSamples = problemSamples
     }
         
-    func run() {
+    func runCLI() {
         print(WELCOME)
         for yourInput: Input in Shell(client: self) {
             let command: Command = yourInput.command
             let args: [String] = yourInput.args
-            switch command {
-            case .nothing:
-                continue
-            case .quit:
-                break
-            case .help:
-                Command.help()
-            case .make:
-                Command.make(args)
-            case .submit:
-                Command.submit(args)
-            case .test:
-                Command.test(args)
-            case .url:
-                if let url = Command.url(args) {
-                    atCoderURL = url
-                    problemExamples = AtCoderCrawler.getExamples(url: url)
-                    print("URLを設定しました。:", url)
+            do {
+                switch command {
+                case .nothing:
+                    continue
+                case .quit:
+                    break
+                case .help:
+                    print(Command.doHelp())
+                case .make:
+                    try Command.doMake(args)
+                case .submit:
+                    try Command.doSubmit(args)
+                case .test:
+                    try Command.doTest(args)
+                case .url:
+                    (atCoderURL, problemSamples) = try Command.doUrl(args)
                 }
+            } catch CommandError.invalidArguments(let message) {
+                print(message)
+            } catch {
+                print(error)
+                break
             }
         }
     }
