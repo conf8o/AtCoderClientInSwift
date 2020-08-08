@@ -17,7 +17,7 @@ struct Input {
             return Input(command: .nothing, args: [])
         }
 
-        if Command.problems.contains(commands[0]) {
+        if Rank(rawValue: commands[0]) != nil {
             commands = [Command.test.rawValue, commands[0]]
         }
 

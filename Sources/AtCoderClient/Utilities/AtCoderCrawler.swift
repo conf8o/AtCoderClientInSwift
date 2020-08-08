@@ -2,7 +2,7 @@ import Foundation
 import Kanna
 
 struct AtCoderCrawler {
-    static func getSamples(atCoderURL: AtCoderURL) -> [String: Samples]? {
+    static func getSamples(atCoderURL: AtCoderURL) -> [Rank: Samples]? {
         guard let contest = atCoderURL.contest else { return nil }
         guard let tasksPath = URL(string: "\(AtCoderURL.contestsPath)\(contest)/tasks") else { return nil }
         do {
@@ -11,13 +11,14 @@ struct AtCoderCrawler {
         
             // A xx B yy C zz ...
             let link = doc.xpath("//tbody//td[contains(@class,'text-center')]//a")
-            let rankSamples = try link.map { element -> (String, Samples) in
-                // rank: A etc.
+            let rankSamples = try link.map { element -> (Rank, Samples) in
+                // _rank: A etc.
                 // href: /contests/abc... etc.
-                guard let rank = element.text,
+                guard let _rank = element.text,
                       let href = element["href"] else { throw AtCoderCrawlerError.invalidURL(tasksPath.absoluteString) }
                 
-                guard let problemURL = URL(string: "https://\(AtCoderURL.host)\(href)") else {
+                guard let rank = Rank(rawValue: _rank),
+                      let problemURL = URL(string: "https://\(AtCoderURL.host)\(href)") else {
                     throw AtCoderCrawlerError.invalidURL(tasksPath.absoluteString)
                 }
                 
