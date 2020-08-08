@@ -1,14 +1,14 @@
 import Foundation
 
 class AtCoderClient {
-    typealias Rank = String // A, B, C ...
-    
     var atCoderURL: AtCoderURL?
-    var problemSamples: [Rank: Samples]?
+    var problemSamples: [Rank: Samples]
+    var fileMapping: [Rank: String]
     
-    init(atCoderURL: AtCoderURL? = nil, problemSamples: [Rank: Samples]? = nil) {
+    init(atCoderURL: AtCoderURL? = nil, problemSamples: [Rank: Samples] = [:], fileMapping: [Rank: String] = [:]) {
         self.atCoderURL = atCoderURL
         self.problemSamples = problemSamples
+        self.fileMapping = fileMapping
     }
         
     func runCLI() {
@@ -21,17 +21,21 @@ class AtCoderClient {
                 case .nothing:
                     continue
                 case .quit:
+                    print("Bye!")
                     break
                 case .help:
                     print(Command.doHelp())
                 case .make:
-                    try Command.doMake(args)
+                    let (rank, fileName) = try Command.doMake(args)
+                    fileMapping[rank] = fileName
                 case .submit:
                     try Command.doSubmit(args)
                 case .test:
                     try Command.doTest(args)
                 case .url:
-                    (atCoderURL, problemSamples) = try Command.doUrl(args)
+                    let (_atCoderURL, _problemSamples) = try Command.doUrl(args)
+                    atCoderURL = _atCoderURL
+                    problemSamples = _problemSamples
                 }
             } catch CommandError.invalidArguments(let message) {
                 print(message)

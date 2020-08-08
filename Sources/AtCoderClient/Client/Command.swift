@@ -8,6 +8,4 @@ enum Command: String {
     case quit = "quit"
     case url = "url"
     case nothing
-
-    static let problems = "A"..."Z"
 }
