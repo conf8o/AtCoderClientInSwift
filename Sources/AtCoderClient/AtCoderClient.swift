@@ -31,7 +31,8 @@ class AtCoderClient {
                 case .submit:
                     try Command.doSubmit(args)
                 case .test:
-                    try Command.doTest(args)
+                    let result = try Command.doTest(args, fileMapping: &fileMapping, problemSamples: &problemSamples)
+                    print(result)
                 case .url:
                     let (_atCoderURL, _problemSamples) = try Command.doUrl(args)
                     atCoderURL = _atCoderURL
