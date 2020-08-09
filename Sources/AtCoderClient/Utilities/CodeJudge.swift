@@ -3,6 +3,8 @@ import Foundation
 struct CodeJugde {
     static let TEMP = "codejudge_tmp"
     static let EXECUTABLE_SWIFT = URL(fileURLWithPath: "/usr/bin/swift")
+    static let TLE = 2.0
+    
     static func judge(swiftFileName: String, inputs: [String], outputs: [String], _ confirmFunc: (String) -> ()) throws -> Bool {
         guard let tmpPath = URL(string: TEMP) else { return false }
         let fileManager = FileManager.default
@@ -13,7 +15,9 @@ struct CodeJugde {
             return false
         }
         
-        return try zip(inputs, outputs).allSatisfy { (input, output) in
+        return try zip(inputs, outputs).reduce(into: true) { (result, samples) in
+            let (input, output) = samples
+            
             confirmFunc("input:\n\(input)")
             confirmFunc("correct output:\n\(output)")
             let fileHandle = try FileHandle(forWritingTo: tmpPath)
@@ -40,11 +44,23 @@ struct CodeJugde {
                 process.launch()
             }
             
+            let start = Date()
+            while process.isRunning {
+                if Date().timeIntervalSince(start) > TLE {
+                    process.terminate()
+                    confirmFunc("result => TLE")
+                    result = false
+                    return
+                }
+            }
+            let processTime = Date().timeIntervalSince(start)
+            
             if #available(OSX 10.15, *) {
                 if let errorData = try errorPipe.fileHandleForReading.readToEnd() {
                     let error = String(decoding: errorData, as: UTF8.self)
                     confirmFunc("error info:\n\(error)")
-                    return false
+                    result = false
+                    return
                 }
             } else {
                 let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
@@ -54,7 +70,8 @@ struct CodeJugde {
             
             if #available(OSX 10.15, *) {
                 guard let outputData = try outputPipe.fileHandleForReading.readToEnd() else {
-                    return false
+                    result = false
+                    return
                 }
 
                 let yourOutput = String(decoding: outputData, as: UTF8.self)
@@ -63,11 +80,11 @@ struct CodeJugde {
                             == output.trimmingCharacters(in: .whitespacesAndNewlines)
                 
                 if ac {
-                    confirmFunc("AC")
+                    confirmFunc("result => AC(in: \(processTime))")
                 } else {
-                    confirmFunc("WA")
+                    confirmFunc("result => WA(in: \(processTime))")
                 }
-                return ac
+                result = result && ac
             } else {
                 let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
                 let yourOutput = String(decoding: outputData, as: UTF8.self)
@@ -76,11 +93,11 @@ struct CodeJugde {
                             == output.trimmingCharacters(in: .whitespacesAndNewlines)
                 
                 if ac {
-                    confirmFunc("AC")
+                    confirmFunc("result => AC")
                 } else {
-                    confirmFunc("WA")
+                    confirmFunc("result => WA")
                 }
-                return ac
+                result = result && ac
             }
             
         }

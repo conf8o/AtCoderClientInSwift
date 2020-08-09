@@ -28,6 +28,7 @@ class AtCoderClient {
                 case .make:
                     let (rank, fileName) = try Command.doMake(args)
                     fileMapping[rank] = fileName
+                    print("問題とファイルを紐付けました。\(rank): \(fileName)")
                 case .submit:
                     try Command.doSubmit(args)
                 case .test:
